@@ -5,7 +5,7 @@
    so a new build arrives as a new cache: activation deletes the old one. Without the stamp a stale cache would keep
    serving last week's wasm against this week's data file, which is worse than a download. */
 
-const BUILD = "581b119654da";
+const BUILD = "4a28323a4fed";
 const CACHE = "astralis-tails-" + BUILD;
 const SHELL = ["index.html", "TemplateData/style.css", "manifest.webmanifest", "TemplateData/icon.jpg"];
 
