@@ -45,6 +45,33 @@
 
       // Shows a temporary ribbon for a warning, or a permanent one for an error. An error is the end of the page's
       // usefulness, so it carries the reload that a phone cannot offer without hunting for the URL bar.
+      // A build whose payloads were cached in halves across a publish stays broken however often the page is reloaded:
+      // the bad copy is the one on the device. Drop the caches and the worker, then load once more from the network.
+      function clearStoredBuild() {
+        var work = [];
+        if (window.caches) {
+          work.push(
+            caches.keys().then(function (names) {
+              return Promise.all(
+                names.map(function (name) {
+                  return name.indexOf("astralis-tails-") === 0 ? caches.delete(name) : null;
+                })
+              );
+            })
+          );
+        }
+        if (navigator.serviceWorker) {
+          work.push(
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+              return Promise.all(
+                registrations.map(function (registration) { return registration.unregister(); })
+              );
+            })
+          );
+        }
+        return Promise.all(work).catch(function () { /* nothing stored is not a reason to stay broken */ });
+      }
+
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
           warningBanner.style.display = warningBanner.children.length ? "block" : "none";
@@ -59,7 +86,7 @@
           reload.type = "button";
           reload.className = "astra-reload";
           reload.textContent = "Reload";
-          reload.onclick = function () { location.reload(); };
+          reload.onclick = function () { clearStoredBuild().then(function () { location.reload(); }); };
           div.appendChild(reload);
         } else {
           if (type == "warning") div.className = "astra-warning";
@@ -72,12 +99,17 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/AstralsTailsIdleLifeWebGL.loader.js";
+      // Every payload URL carries the build stamp. The filenames are the same in every build, so without it a browser
+      // or a service worker can answer from the ten minutes GitHub's cache header allows and pair one build's data
+      // with another build's wasm; WebAssembly then dies with "indirect call signature mismatch" on the first call.
+      var buildStamp = (document.querySelector('meta[name="astra-build"]') || {}).content || "";
+      function buildFile(name) { return buildUrl + "/" + name + "?b=" + encodeURIComponent(buildStamp); }
+      var loaderUrl = buildFile("AstralsTailsIdleLifeWebGL.loader.js");
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/AstralsTailsIdleLifeWebGL.data.unityweb",
-        frameworkUrl: buildUrl + "/AstralsTailsIdleLifeWebGL.framework.js.unityweb",
-        codeUrl: buildUrl + "/AstralsTailsIdleLifeWebGL.wasm.unityweb",
+        dataUrl: buildFile("AstralsTailsIdleLifeWebGL.data.unityweb"),
+        frameworkUrl: buildFile("AstralsTailsIdleLifeWebGL.framework.js.unityweb"),
+        codeUrl: buildFile("AstralsTailsIdleLifeWebGL.wasm.unityweb"),
         streamingAssetsUrl: "StreamingAssets",
         fullscreenElementID: "unity-fullscreen-container",
         companyName: "Drawkcin Entertainment",
