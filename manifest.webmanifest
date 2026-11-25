@@ -1,0 +1,19 @@
+{
+  "name": "Astralis Tails",
+  "short_name": "Astralis Tails",
+  "description": "",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#241d4a",
+  "theme_color": "#241d4a",
+  "icons": [
+    {
+      "src": "TemplateData/icon.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
