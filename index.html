@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Astralis Tails">
     <!-- Tools/publish-build.sh replaces this token with a hash of the payloads, so a bug report names its build. -->
-    <meta name="astra-build" content="55e804ba2b9b">
+    <meta name="astra-build" content="581b119654da">
     <title>Astralis Tails</title>
     <link rel="icon" href="TemplateData/icon.jpg">
     <link rel="apple-touch-icon" href="TemplateData/icon.jpg">
@@ -85,6 +85,14 @@
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
       };
+
+      // How many device pixels the canvas is drawn at for every CSS pixel. A phone asks for two or three; the third
+      // costs over half again the pixels of the second and is spent on a screen too small to show the difference, so
+      // it is frame budget spent on nothing. Two is the ceiling here - lower it if a phone still cannot hold a frame.
+      //
+      // The engine reads this in JS_SystemInfo_GetPreferredDevicePixelRatio, which is what sizes the canvas; the HUD
+      // then divides out whatever ratio the canvas really got, so the two cannot disagree (AstraBrowser.jslib).
+      config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
 
       var script = document.createElement("script");

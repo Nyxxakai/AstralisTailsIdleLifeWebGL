@@ -1,7 +1,7 @@
 {
   "name": "Astralis Tails",
   "short_name": "Astralis Tails",
-  "description": "",
+  "description": "An idle dungeon crawl: the party walks the floors, fights what it meets, and carries the loot back to the inn.",
   "start_url": "index.html",
   "scope": "./",
   "display": "fullscreen",
