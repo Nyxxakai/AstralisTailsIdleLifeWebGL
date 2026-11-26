@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Astralis Tails">
     <!-- Tools/publish-build.sh replaces this token with a hash of the payloads, so a bug report names its build. -->
-    <meta name="astra-build" content="4a28323a4fed">
+    <meta name="astra-build" content="6786dfbbc540">
     <title>Astralis Tails</title>
     <link rel="icon" href="TemplateData/icon.jpg">
     <link rel="apple-touch-icon" href="TemplateData/icon.jpg">
@@ -45,6 +45,32 @@
 
       // Shows a temporary ribbon for a warning, or a permanent one for an error. An error is the end of the page's
       // usefulness, so it carries the reload that a phone cannot offer without hunting for the URL bar.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+        }
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+
+        if (type == "error") {
+          div.className = "astra-error";
+          var reload = document.createElement("button");
+          reload.type = "button";
+          reload.className = "astra-reload";
+          reload.textContent = "Reload";
+          reload.onclick = function () { clearStoredBuild().then(function () { location.reload(); }); };
+          div.appendChild(reload);
+        } else {
+          if (type == "warning") div.className = "astra-warning";
+          setTimeout(function () {
+            if (div.parentNode) div.parentNode.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
       // A build whose payloads were cached in halves across a publish stays broken however often the page is reloaded:
       // the bad copy is the one on the device. Drop the caches and the worker, then load once more from the network.
       function clearStoredBuild() {
@@ -70,32 +96,6 @@
           );
         }
         return Promise.all(work).catch(function () { /* nothing stored is not a reason to stay broken */ });
-      }
-
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-        }
-        var div = document.createElement("div");
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-
-        if (type == "error") {
-          div.className = "astra-error";
-          var reload = document.createElement("button");
-          reload.type = "button";
-          reload.className = "astra-reload";
-          reload.textContent = "Reload";
-          reload.onclick = function () { clearStoredBuild().then(function () { location.reload(); }); };
-          div.appendChild(reload);
-        } else {
-          if (type == "warning") div.className = "astra-warning";
-          setTimeout(function () {
-            if (div.parentNode) div.parentNode.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
       }
 
       var buildUrl = "Build";
