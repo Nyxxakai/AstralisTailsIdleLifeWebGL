@@ -97,6 +97,16 @@ body {
   color: rgba(232, 221, 194, 0.62);
 }
 
+/* Quiet enough to ignore while playing, readable enough to settle the question the hint above always raised: which
+   build is on this phone? */
+#astra-build-label {
+  margin-top: 14px;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(244, 230, 191, 0.42);
+}
+
 /* The error ribbon sits over the canvas rather than pushing it down, and a phone has no obvious reload, so it
    carries its own button. */
 #unity-warning {
